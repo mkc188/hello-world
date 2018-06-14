@@ -17,9 +17,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from myapp.views import hello_world
+from myapp.views import submit_location, get_driving_route
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^hello/$', hello_world),
+    # url(r'^admin/', admin.site.urls),
+    url(r'^route/?$', submit_location),
+    url(r'^route/(?P<token>[0-9a-f-]+)?/?$', get_driving_route),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
