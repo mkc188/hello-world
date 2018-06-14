@@ -9,6 +9,16 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: mypassword
       MYSQL_DATABASE: django-test
+  rabbitmq:
+    image: 'rabbitmq:3.7.3-management'
+    container_name: some-rabbit
+    environment:
+      - RABBITMQ_DEFAULT_USER=celery
+      - RABBITMQ_DEFAULT_PASS=password123
+      - RABBITMQ_DEFAULT_VHOST=my_vhost
+    ports:
+      - '5672:5672'
+      - '15672:15672'
   web:
     build: .
     command: python /code/server.py
@@ -18,6 +28,13 @@ services:
       - "9808:9808"
     depends_on:
       - db
+  migration:
+    build: .
+    command: python manage.py migrate --noinput
+    volumes_from:
+      - web
+    depends_on:
+      - web
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
@@ -27,3 +44,14 @@ services:
       - 8082:80
     volumes:
       - /sessions
+  celery_worker:
+    build: .
+    environment:
+      C_FORCE_ROOT: 1
+    command: 'python -m celery -A mysite worker -l info'
+    volumes_from:
+      - web
+    depends_on:
+      - rabbitmq
+      - phpmyadmin
+      - migration
