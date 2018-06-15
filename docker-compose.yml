@@ -28,9 +28,11 @@ services:
     ports:
       - "9808:9808"
     env_file: '.env'
+    environment:
+      - VIRTUAL_HOST=web.local
     depends_on:
       - db
-      - celery_worker
+      - migration
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     env_file: '.env'
@@ -53,3 +55,9 @@ services:
       - rabbitmq
       - phpmyadmin
       - migration
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
