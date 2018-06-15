@@ -8,17 +8,17 @@ import os
 def task_shortest(data):
   try:
     if len(data) < 2:
-      return {'error': 'WrongBodyFormat' }
+      return {'status': 'failure', 'error': 'WrongBodyFormat'}
     lat, lng = data[0]
     if not str(lat).replace('.','',1).isdigit() or not str(lng).replace('.','',1).isdigit():
-      return {'error': 'WrongNumber' }
+      return {'status': 'failure', 'error': 'WrongNumber'}
     key = os.environ['GOOGLE_API_KEY']
     url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
     url += 'origins=' + str(lat) + ',' + str(lng)
     latlngs = []
     for lat, lng in data[1:]:
       if not str(lat).replace('.','',1).isdigit() or not str(lng).replace('.','',1).isdigit():
-        return {'error': 'WrongNumber' }
+        return {'status': 'failure', 'error': 'WrongNumber'}
       latlngs.append(str(lat) + ',' + str(lng))
     url += '&destinations='  + '|'.join(latlngs)
     url += '&departure_time=now'
@@ -37,9 +37,9 @@ def task_shortest(data):
           totalDistance += distance
           totalDuration += duration
         else:
-          return {'error': r['status'] }
+          return {'status': 'failure', 'error': r['status']}
       return {'status': 'success', 'path': data, 'total_distance': totalDistance, 'total_time': totalDuration}
     else:
-      return {'error': r['status'] }
+      return {'status': 'failure', 'error': r['status']}
   except Exception as e:
-    return {'error': e.__class__.__name__ }
+    return {'status': 'failure', 'error': e.__class__.__name__}
