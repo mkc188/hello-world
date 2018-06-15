@@ -15,14 +15,14 @@ services:
   migration:
     build: .
     env_file: '.env'
-    command: ['/code/wait-for-it.sh', 'db:3306', '--', 'python', 'manage.py', 'migrate']
+    command: ['/code/wait-for-it.sh', 'db:3306', '-t', '0', '--', 'python', 'manage.py', 'migrate']
     volumes:
       - .:/code
     depends_on:
       - db
   web:
     build: .
-    command: ['/code/wait-for-it.sh', 'db:3306', '--', 'python', '/code/server.py']
+    command: ['/code/wait-for-it.sh', 'db:3306', '-t', '0', '--', 'python', '/code/server.py']
     volumes:
       - .:/code
     ports:
