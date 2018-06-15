@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(hmp&l-x*oh@98$s97%6+(3cqkc5285ssgp1hq+%wk1cpv0s)n'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'Q+%ik6z&!yer+ga9m=e%jcqAd21asdAFw2')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'true').lower() == 'true'
 
 ALLOWED_HOSTS = ['*']
 
@@ -79,11 +79,11 @@ DATABASES = {
     'default': {
         'ATOMIC_REQUESTS': True,
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django-test',
-        'USER': 'root',
-        'PASSWORD': 'mypassword',
-        'HOST': 'db',
-        'PORT': '3306',
+        'NAME': os.environ.get('DB_NAME', 'default'),
+        'USER': os.environ['DB_USER'],
+        'PASSWORD': os.environ['DB_PASS'],
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ['DB_PORT'],
         'OPTIONS': {'charset':'utf8mb4'}
     }
 }

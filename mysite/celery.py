@@ -5,7 +5,7 @@ from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 
-app = Celery('challenge', broker='amqp://celery:password123@rabbitmq:5672/my_vhost')
+app = Celery('challenge', broker='amqp://' + os.environ['RABBITMQ_DEFAULT_USER'] + ':' + os.environ['RABBITMQ_DEFAULT_PASS'] + '@rabbitmq:5672/my_vhost')
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
 

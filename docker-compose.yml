@@ -4,18 +4,11 @@ services:
     image: mysql:5.7
     ports:
       - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: mypassword
-      MYSQL_USER: root
-      MYSQL_PASSWORD: mypassword
-      MYSQL_DATABASE: django-test
+    env_file: '.env'
   rabbitmq:
     image: 'rabbitmq:3.7.3-management'
     container_name: some-rabbit
-    environment:
-      - RABBITMQ_DEFAULT_USER=celery
-      - RABBITMQ_DEFAULT_PASS=password123
-      - RABBITMQ_DEFAULT_VHOST=my_vhost
+    env_file: '.env'
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -26,10 +19,12 @@ services:
       - .:/code
     ports:
       - "9808:9808"
+    env_file: '.env'
     depends_on:
       - db
   migration:
     build: .
+    env_file: '.env'
     command: python manage.py migrate --noinput
     volumes_from:
       - web
@@ -37,6 +32,7 @@ services:
       - web
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    env_file: '.env'
     environment:
       - PMA_ARBITRARY=1
     restart: always
@@ -46,8 +42,9 @@ services:
       - /sessions
   celery_worker:
     build: .
+    env_file: '.env'
     environment:
-      C_FORCE_ROOT: 1
+      - C_FORCE_ROOT=1
     command: 'python -m celery -A mysite worker -l info'
     volumes_from:
       - web

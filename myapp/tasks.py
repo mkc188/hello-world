@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 import requests
 import time
+import os
 
 @shared_task
 def task_shortest(data):
@@ -11,7 +12,7 @@ def task_shortest(data):
     lat, lng = data[0]
     if not str(lat).replace('.','',1).isdigit() or not str(lng).replace('.','',1).isdigit():
       return {'error': 'WrongNumber' }
-    key = 'AIzaSyAFjCSfZgIi0etci1O0Ap-Q3KLw8oHUo6o'
+    key = os.environ['GOOGLE_API_KEY']
     url = 'https://maps.googleapis.com/maps/api/distancematrix/json?'
     url += 'origins=' + str(lat) + ',' + str(lng)
     latlngs = []
