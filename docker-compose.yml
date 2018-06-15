@@ -12,9 +12,17 @@ services:
     ports:
       - '5672:5672'
       - '15672:15672'
+  migration:
+    build: .
+    env_file: '.env'
+    command: ['/code/wait-for-it.sh', 'db:3306', '--', 'python', 'manage.py', 'migrate']
+    volumes:
+      - .:/code
+    depends_on:
+      - db
   web:
     build: .
-    command: python /code/server.py
+    command: ['/code/wait-for-it.sh', 'db:3306', '--', 'python', '/code/server.py']
     volumes:
       - .:/code
     ports:
@@ -22,14 +30,7 @@ services:
     env_file: '.env'
     depends_on:
       - db
-  migration:
-    build: .
-    env_file: '.env'
-    command: python manage.py migrate --noinput
-    volumes_from:
-      - web
-    depends_on:
-      - web
+      - celery_worker
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     env_file: '.env'
